@@ -1,0 +1,231 @@
+.\" Copyright (c) 2007 S.Sam Arun Raj
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.Dd October 24, 2021
+.Dt STRINGS 1
+.Os
+.Sh NAME
+.Nm strings
+.Nd "print the strings of printable characters in files"
+.Sh SYNOPSIS
+.Nm
+.Op Fl a | Fl -all
+.Op Fl e Ar encoding | Fl -encoding= Ns Ar encoding
+.Op Fl f | Fl -print-file-name
+.Op Fl ? | Fl h | Fl -help
+.Op Fl m Ar number | Fl n Ar number | Fl -bytes= Ns Ar number | Fl Ar number
+.Op Fl o
+.Op Fl s Ar separator | Fl -output-separator= Ns Ar separator
+.Op Fl t Ar radix | Fl -radix= Ns Ar radix
+.Op Fl v | Fl V | Fl -version
+.Op Fl w | Fl -include-all-whitespace
+.Op Fl -debug
+.Op Fl -
+.Op Ar
+.Sh DESCRIPTION
+For each
+.Ar file
+specified, the
+.Nm
+utility prints contiguous sequences of printable
+characters that are at least
+.Va n
+characters long and are followed by an unprintable character.
+The default value of
+.Va n
+is 4.
+By default, the entire file is scanned.
+The
+.Nm
+utility is mainly used for determining the contents of non-text files.
+.Pp
+If no file name is specified as an argument, standard input is read.
+.Ss OPTIONS
+The following options are available:
+.Bl -tag -width indent
+.It Fl a | Fl -all
+Scan the entire file for printable strings
+(which is the default anyway)
+.It Fl e Ar encoding | Fl -encoding= Ns Ar encoding
+Select the character encoding to be used while searching for strings.
+Valid values for argument
+.Ar encoding
+are:
+.Bl -tag -width indent -compact
+.It Ar s
+for single 7-bit-byte characters (ASCII, ISO 8859).
+.It Ar S
+for single 8-bit-byte characters.
+.It Ar l
+for 16-bit little-endian.
+.It Ar b
+for 16-bit big-endian.
+.It Ar L
+for 32-bit little-endian.
+.It Ar B
+for 32-bit big-endian.
+.It Ar u
+for 1 to 4 bytes UTF-8 characters.
+.El
+The default is to assume that characters are encoded using a single
+7-bit byte
+.It Fl f | Fl -print-file-name
+Print the name of the file before each string
+.It Fl ? | Fl h | Fl -help
+Print a usage summary and exit
+.It Xo
+.Fl m Ar number |
+.Fl n Ar number |
+.Fl -bytes= Ns Ar number |
+.Fl Ar number
+.Xc
+Print the contiguous character sequence of at least
+.Ar number
+characters long, instead of the default of 4 characters.
+Argument
+.Ar number
+should specify a positive decimal integer
+.It Fl o
+Equivalent to specifying
+.Fl t Ar o
+.It Fl s Ar separator | Fl -output-separator= Ns Ar separator
+By default, output strings are delimited by a new-line.
+This option allows you to supply any string
+.Ar separator
+to be used as the output record separator.
+Useful with
+.Fl -include-all-whitespace
+where strings may contain new-lines internally.
+.It Fl t Ar radix | Fl -radix= Ns Ar radix
+Print the offset from the start of the file before each string
+using the specified radix.
+Valid values for argument
+.Ar radix
+are:
+.Bl -tag -width indent -compact
+.It Ar d
+for decimal
+.It Ar o
+for octal
+.It Ar x
+for hexadecimal
+.El
+.It Fl v | Fl V | Fl -version
+Display a version identifier and exit
+.It Fl w | Fl -include-all-whitespace
+By default tab and space characters are included in the strings that are displayed,
+but other whitespace characters, such a newlines and carriage returns, are not.
+The
+.Fl w
+option changes this so that all whitespace characters are considered to be part of a string.
+.It Fl -debug
+Enable debug mode
+.It Fl -
+Options processing terminator
+.El
+.Sh ENVIRONMENT
+The
+.Ev STRINGS_DEBUG
+environment variable can be set to any value to enable debug mode.
+.Pp
+The
+.Ev FLAVOUR
+or
+.Ev STRINGS_FLAVOUR
+environment variables can be set to one of the following values,
+to implement only the corresponding options and behaviours.
+.Bl -bullet
+.It
+posix : POSIX
+.It
+unix | unix:v10 : Unix v10
+.It
+bsd | bsd:freebsd : FreeBSD
+.It
+gnu | gnu:linux | linux : GNU/Linux
+.It
+plan9 : Plan 9
+.It
+inferno : Inferno
+.El
+.Pp
+However, if the
+.Ev POSIXLY_CORRECT
+environment variable is set to any value, then the POSIX flavour will be selected.
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+To display strings in all sections of
+.Pa /bin/ln
+use:
+.Dl "$ strings -a /bin/ln"
+.Pp
+To display strings in all sections of
+.Pa /bin/cat
+prefixed with the filename and the offset within the file use:
+.Dl "$ strings -a -f -t x /bin/cat"
+.Sh SEE ALSO
+.Xr ar 1 ,
+.Xr nm 1 ,
+.Xr objdump 1 ,
+.Xr ranlib 1 ,
+.Xr readelf 1 ,
+.Xr size 1
+.Sh STANDARDS
+The
+.Nm
+utility is a standard UNIX/POSIX command.
+.Pp
+This re-implementation tries to follow the PEP 8 style guide for Python code.
+.Pp
+Beyond Plan 9 and Inferno, UTF-encoded characters are supported in all
+(but POSIX and Unix v10) flavours with the
+.Fl e Ar u | Fl -encoding= Ns Ar u
+options.
+.Sh HISTORY
+The first
+.Nm
+utility was written by Bill Joy on April 22, 1978, and appeared in
+.Bx 2 .
+.Pp
+This re-implementation was made for the
+.Lk https://github.com/HubTou/PNU [PNU project]
+.Sh LICENSE
+It is available under the 3-clause BSD license.
+.Sh AUTHORS
+.An Hubert Tournier
+.Pp
+This manual page is based on the one written for
+.Fx
+by
+.An S.Sam Arun Raj Aq Mt samarunraj@gmail.com .
+.Sh CAVEATS
+This re-implementation does not support any executable format (ELF, a.out, COFF, etc.).
+All executable files are entirely scanned, regardless of
+.Fl a | Fl -all | Fl | Fl -data | Fl d | Fl t | Fl s | Fl T | Fl -target
+options.
+.Pp
+GNU strings
+.Ar @file
+option is also unsupported.

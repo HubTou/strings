@@ -104,3 +104,4 @@ This re-implementation does not support any executable format ([ELF](https://en.
 All executable files are entirely scanned, regardless of *-a* | *--all* | *-* | *--data* | *-d* | *-t* | *-s* | *-T* | *--target* options.
 
 [GNU strings](https://www.gnu.org/software/binutils/) *@file* option is also unsupported.
+
