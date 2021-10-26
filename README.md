@@ -86,6 +86,9 @@ This re-implementation tries to follow the [PEP 8](https://www.python.org/dev/pe
 
 Beyond [Plan 9](https://en.wikipedia.org/wiki/Plan_9_from_Bell_Labs) and [Inferno](https://en.wikipedia.org/wiki/Inferno_(operating_system)), [UTF](https://en.wikipedia.org/wiki/UTF-8)-encoded characters are supported in all (but POSIX and Unix v10) flavours with the *-e u* | *--encoding=u* options.
 
+## PORTABILITY
+Tested OK under Windows.
+
 ## HISTORY
 The first strings utility was written by [Bill Joy](https://en.wikipedia.org/wiki/Bill_Joy) on [April 22, 1978](https://minnie.tuhs.org/cgi-bin/utree.pl?file=2BSD/src/strings.c), and appeared in [2BSD](https://en.wikipedia.org/wiki/History_of_the_Berkeley_Software_Distribution#2BSD_(PDP-11)).
 

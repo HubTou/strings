@@ -8,10 +8,11 @@ import getopt
 import logging
 import os
 import struct
+import signal
 import sys
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: strings - print the strings of printable characters in files v1.0.0 (October 24, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: strings - print the strings of printable characters in files v1.0.1 (October 26, 2021) by Hubert Tournier $"
 
 # Default parameters. Can be overcome by environment variables, then command line options
 parameters = {
@@ -244,6 +245,20 @@ def _display_help():
 
 
 ################################################################################
+def _handle_interrupts(signal_number, current_stack_frame):
+    """Prevent SIGINT signals from displaying an ugly stack trace"""
+    print(" Interrupted!\n", file=sys.stderr)
+    _display_help()
+    sys.exit(0)
+
+
+################################################################################
+def _handle_signals():
+    """Process signals"""
+    signal.signal(signal.SIGINT, _handle_interrupts)
+
+
+################################################################################
 def _process_environment_variables():
     """Process environment variables"""
     # pylint: disable=C0103
@@ -429,7 +444,7 @@ def _process_command_line():
                     "Looking for symbol strings in the symbol table of an a.out object file is not implemented"
                 )
                 sys.exit(1)
-            elif parameters["Command flavour"] in ("gnu", "gnu:linux", "linux"):
+            else:
                 parameters["Output separator"] = argument
 
         elif option in ("-t", "--radix"):
@@ -639,6 +654,7 @@ def main():
     program_name = os.path.basename(sys.argv[0])
 
     _initialize_debugging(program_name)
+    _handle_signals()
     _process_environment_variables()
     arguments = _process_command_line()
 
