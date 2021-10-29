@@ -1,5 +1,4 @@
 NAME=strings
-SECTION=1
 SOURCES=src/${NAME}/__init__.py src/${NAME}/main.py
 
 # Default action is to show this help message:
@@ -44,10 +43,13 @@ format: /usr/local/bin/black
 love:
 	@echo "Not war!"
 
-man/${NAME}.${SECTION}.gz: man/${NAME}.${SECTION}
-	@gzip -k9c man/${NAME}.${SECTION} > man/${NAME}.${SECTION}.gz
+man/${NAME}.1.gz: man/${NAME}.1
+	@gzip -k9c man/${NAME}.1 > man/${NAME}.1.gz
 
-package: man/${NAME}.${SECTION}.gz
+man/${NAME}.3.gz: man/${NAME}.3
+	@gzip -k9c man/${NAME}.3 > man/${NAME}.3.gz
+
+package: man/${NAME}.1.gz man/${NAME}.3.gz
 	python -m build
 
 upload-test:
@@ -57,5 +59,5 @@ upload:
 	python -m twine upload dist/*
 
 distclean:
-	rm -rf build dist man/${NAME}.${SECTION}.gz src/*.egg-info
+	rm -rf build dist man/${NAME}.1.gz man/${NAME}.3.gz src/*.egg-info
 

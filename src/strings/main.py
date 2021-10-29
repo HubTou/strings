@@ -12,19 +12,21 @@ import signal
 import sys
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: strings - print the strings of printable characters in files v1.0.1 (October 26, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: strings - print the strings of printable characters in files v1.1.0 (October 29, 2021) by Hubert Tournier $"
 
 # Default parameters. Can be overcome by environment variables, then command line options
 parameters = {
     # File parameters:
-    "Scan entire file": True, # unused yet
-    "Object code format": "", # "ELF", "a.out", "COFF", etc.
     "Encoding": "s", # between "s", "S", "l", "b", "L", "B", "u"
+    "Scan entire file": False,
+    "Target": "", # "ELF", "a.out", "COFF", etc.
+    "Offset": 0,
+    "Length": sys.maxsize,
 
     # String parameters:
     "Include backspaces": False,
     "Include whitespaces": False,
-    "String termination": "unprintable", # or "null or newline"
+    "String termination": [], # empty list = all unprintable characters
     "Minimum length": 4,
 
     # Display parameters:
@@ -50,79 +52,79 @@ def _display_help():
     """Displays usage and help"""
     if parameters["Command flavour"] == "posix":
         print("usage: strings [--debug] [--help|-?] [--version]", file=sys.stderr)
-        print("       [-a] [-n N] [-t R]", file=sys.stderr)
+        print("       [-a] [-n NUM] [-t CHAR]", file=sys.stderr)
         print("       [--] [file ...]", file=sys.stderr)
         print(
-            "  ---------------------  --------------------------------------------------",
+            "  ---------  -------------------------------------------",
             file=sys.stderr
         )
-        print("  -a                     Scan the entire file for strings", file=sys.stderr)
+        print("  -a         Scan the entire file for strings", file=sys.stderr)
         print(
-            "  -n N                   Print sequences with 'N' or more characters",
+            "  -n NUM     Print sequences with NUM or more characters",
             file=sys.stderr
         )
         print(
-            "  -t R                   Print offsets using the radix named by 'R'",
+            "  -t CHAR    Print offsets using the radix named by CHAR",
             file=sys.stderr
         )
-        print("  --debug                Enable debug mode", file=sys.stderr)
-        print("  --help|-?              Print a help message and exit", file=sys.stderr)
-        print("  --version              Print version and exit", file=sys.stderr)
-        print("  --                     Options processing terminator", file=sys.stderr)
+        print("  --debug    Enable debug mode", file=sys.stderr)
+        print("  --help|-?  Print a help message and exit", file=sys.stderr)
+        print("  --version  Print version and exit", file=sys.stderr)
+        print("  --         Options processing terminator", file=sys.stderr)
     elif parameters["Command flavour"] in ("unix", "unix:v10"):
         print("usage: strings [--debug] [--help|-?] [--version]", file=sys.stderr)
         print("       [-a] [-d] [-o] [-s] [-t]", file=sys.stderr)
         print("       [--] [file ...]", file=sys.stderr)
         print(
-            "  ---------------------  --------------------------------------------------",
+            "  ---------  -------------------------------------------------------------",
             file=sys.stderr
         )
-        print("  -a                     Look for strings throughout the file", file=sys.stderr)
+        print("  -a         Look for strings throughout the file", file=sys.stderr)
         print(
-            "  -d                     Look for strings in the data segment of an object file",
+            "  -d         Look for strings in the data segment of an object file",
             file=sys.stderr
         )
-        print("  -o                     Print offsets in octal", file=sys.stderr)
+        print("  -o         Print offsets in octal", file=sys.stderr)
         print(
-            "  -s                     Look for symbol strings in the symbol table"
+            "  -s         Look for symbol strings in the symbol table"
             + " of an object file",
             file=sys.stderr
         )
         print(
-            "  -t                     Look for strings in the text segment of an object file",
+            "  -t         Look for strings in the text segment of an object file",
             file=sys.stderr
             )
         print(
-            "  -number                Ignore strings less than number characters long",
+            "  -number    Ignore strings less than number characters long",
             file=sys.stderr
         )
         print(
-            "                         (excluding new lines). Default length is 4",
+            "             (excluding new lines). Default length is 4",
             file=sys.stderr
         )
-        print("  --debug                Enable debug mode", file=sys.stderr)
-        print("  --help|-?              Print a help message and exit", file=sys.stderr)
-        print("  --version              Print version and exit", file=sys.stderr)
-        print("  --                     Options processing terminator", file=sys.stderr)
+        print("  --debug    Enable debug mode", file=sys.stderr)
+        print("  --help|-?  Print a help message and exit", file=sys.stderr)
+        print("  --version  Print version and exit", file=sys.stderr)
+        print("  --         Options processing terminator", file=sys.stderr)
     elif parameters["Command flavour"] in ("bsd", "bsd:freebsd"):
         print("usage: strings [--debug] [-h|--help|-?] [-v|-V|--version]", file=sys.stderr)
-        print("       [-a|--all] [-e|--encoding ENC] [-f|--print-file-name]", file=sys.stderr)
-        print("       [-n N|--bytes N|-N] [-o] [-t|--radix R]", file=sys.stderr)
+        print("       [-a|--all] [-e|--encoding CHAR] [-f|--print-file-name]", file=sys.stderr)
+        print("       [-n|--bytes NUM | -NUM] [-o] [-t|--radix CHAR]", file=sys.stderr)
         print("       [--] [file ...]", file=sys.stderr)
         print(
-            "  ---------------------  --------------------------------------------------",
+            "  ---------------------  -------------------------------------------",
             file=sys.stderr
         )
         print("  -a|--all               Scan the entire file for strings", file=sys.stderr)
-        print("  -e ENC|--encoding ENC  Select the character encoding to use", file=sys.stderr)
+        print("  -e|--encoding CHAR     Select the character encoding to use", file=sys.stderr)
         print("  -f|--print-file-name   Print the file name before each string", file=sys.stderr)
         print(
-            "  -n N|--bytes N|-N      Print sequences with 'N' or more characters",
+            "  -n|--bytes NUM | -NUM  Print sequences with NUM or more characters",
             file=sys.stderr
         )
         print("  -o                     Print offsets in octal", file=sys.stderr)
         print(
-            "  -t R|--radix R         Print offsets using the radix named by 'R'",
+            "  -t|--radix CHAR        Print offsets using the radix named by 'R'",
             file=sys.stderr
         )
         print("  --debug                Enable debug mode", file=sys.stderr)
@@ -131,116 +133,130 @@ def _display_help():
         print("  --                     Options processing terminator", file=sys.stderr)
     elif parameters["Command flavour"] in ("gnu", "gnu:linux", "linux"):
         print("usage: strings [--debug] [-h|--help|-?] [-v|-V|--version]", file=sys.stderr)
-        print("       [-a|--all] [-d|--data] [-e|--encoding ENC] [-f|--print-file-name]", file=sys.stderr)
-        print("       [-n N|--bytes N|-N] [-o] [-s|--output-separator S] [-t|--radix R]", file=sys.stderr)
-        print("       [-T|--target FMT] [-w|--include-all-whitespace]", file=sys.stderr)
+        print("       [-a|--all] [-d|--data] [-e|--encoding CHAR]", file=sys.stderr)
+        print("       [-f|--print-file-name] [-n|--bytes NUM | -NUM] [-o]", file=sys.stderr)
+        print("       [-s|--output-separator STRING] [-t|--radix CHAR]", file=sys.stderr)
+        print("       [-T|--target STRING] [-w|--include-all-whitespace]", file=sys.stderr)
         print("       [--] [file ...]", file=sys.stderr)
         print(
-            "  ---------------------------  --------------------------------------------------",
+            "  ----------------------------  ---------------------------------------------------------",
             file=sys.stderr
         )
-        print("  -a|--all                     Scan the entire file for strings", file=sys.stderr)
+        print("  -a|--all                      Scan the entire file for strings", file=sys.stderr)
         print(
-            "  -d|--data                    Only print strings from initialized, loaded data sections",
-            file=sys.stderr
-        )
-        print(
-            "  -e ENC|--encoding ENC        Select the character encoding to use",
+            "  -d|--data                     Only print strings from initialized, loaded data sections",
             file=sys.stderr
         )
         print(
-            "  -f|--print-file-name         Print the file name before each string",
+            "  -e|--encoding CHAR            Select the character encoding to use",
             file=sys.stderr
         )
         print(
-            "  -n N|--bytes N|-N            Print sequences with 'N' or more characters",
-            file=sys.stderr
-        )
-        print("  -o                           Print offsets in octal", file=sys.stderr)
-        print(
-            "  -s S|--output-separator S    Use 'S' as the output record separator",
+            "  -f|--print-file-name          Print the file name before each string",
             file=sys.stderr
         )
         print(
-            "  -t R|--radix R               Print offsets using the radix named by 'R'",
+            "  -n|--bytes NUM | -NUM         Print sequences with NUM or more characters",
+            file=sys.stderr
+        )
+        print("  -o                            Print offsets in octal", file=sys.stderr)
+        print(
+            "  -s|--output-separator STRING  Use STRING as the output record separator",
             file=sys.stderr
         )
         print(
-            "  -T FMT |--target FMT         Specify an object code format other than",
+            "  -t|--radix CHAR               Print offsets using the radix named by CHAR",
             file=sys.stderr
         )
-        print("                               your system's default format", file=sys.stderr)
         print(
-            "  -w|--include-all-whitespace  All whitespace characters are considered",
+            "  -T|--target STRING            Specify an object code format other than",
             file=sys.stderr
         )
-        print("                               to be part of a string", file=sys.stderr)
-        print("  --debug                      Enable debug mode", file=sys.stderr)
-        print("  -h|--help|-?                 Print a help message and exit", file=sys.stderr)
-        print("  -v|-V|--version              Print version and exit", file=sys.stderr)
-        print("  --                           Options processing terminator", file=sys.stderr)
+        print("                                your system's default format", file=sys.stderr)
+        print(
+            "  -w|--include-all-whitespace   All whitespace characters are considered",
+            file=sys.stderr
+        )
+        print("                                to be part of a string", file=sys.stderr)
+        print("  --debug                       Enable debug mode", file=sys.stderr)
+        print("  -h|--help|-?                  Print a help message and exit", file=sys.stderr)
+        print("  -v|-V|--version               Print version and exit", file=sys.stderr)
+        print("  --                            Options processing terminator", file=sys.stderr)
     elif parameters["Command flavour"] == "plan9":
         print("usage: strings [--debug] [--help|-?] [--version]", file=sys.stderr)
-        print("       [-m N]", file=sys.stderr)
+        print("       [-m NUM]", file=sys.stderr)
         print("       [--] [file ...]", file=sys.stderr)
         print(
-            "  ---------------------  --------------------------------------------------",
+            "  ---------  -------------------------------------------",
             file=sys.stderr
         )
         print(
-            "  -m N                   Print sequences with 'N' or more characters",
+            "  -m NUM     Print sequences with NUM or more characters",
             file=sys.stderr
         )
-        print("  --debug                Enable debug mode", file=sys.stderr)
-        print("  --help|-?              Print a help message and exit", file=sys.stderr)
-        print("  --version              Print version and exit", file=sys.stderr)
-        print("  --                     Options processing terminator", file=sys.stderr)
+        print("  --debug    Enable debug mode", file=sys.stderr)
+        print("  --help|-?  Print a help message and exit", file=sys.stderr)
+        print("  --version  Print version and exit", file=sys.stderr)
+        print("  --         Options processing terminator", file=sys.stderr)
     elif parameters["Command flavour"] == "inferno":
         print("usage: strings [--debug] [--help|-?] [--version]", file=sys.stderr)
         print("       [--] [file ...]", file=sys.stderr)
         print(
-            "  ---------------------  --------------------------------------------------",
+            "  ---------  -----------------------------",
             file=sys.stderr
         )
-        print("  --debug                Enable debug mode", file=sys.stderr)
-        print("  --help|-?              Print a help message and exit", file=sys.stderr)
-        print("  --version              Print version and exit", file=sys.stderr)
-        print("  --                     Options processing terminator", file=sys.stderr)
+        print("  --debug    Enable debug mode", file=sys.stderr)
+        print("  --help|-?  Print a help message and exit", file=sys.stderr)
+        print("  --version  Print version and exit", file=sys.stderr)
+        print("  --         Options processing terminator", file=sys.stderr)
     else: # PNU
         print("usage: strings [--debug] [-h|--help|-?] [-v|-V|--version]", file=sys.stderr)
-        print("       [-a|--all] [-e|--encoding ENC] [-f|--print-file-name]", file=sys.stderr)
-        print("       [-m N|-n N|--bytes N|-N] [-o] [-s|--output-separator S]", file=sys.stderr)
-        print("       [-t|--radix R] [-w|--include-all-whitespace]", file=sys.stderr)
+        print("       [-a|--all] [-D|--delimiters LIST][-e|--encoding CHAR]", file=sys.stderr)
+        print("       [-f|--print-file-name] [-L|--length NUM]", file=sys.stderr)
+        print("       [-m NUM|-n NUM|--bytes NUM|-NUM] [-o] [-O|--offset NUM]", file=sys.stderr)
+        print("       [-s|--output-separator STRING] [-S|--split-lines]", file=sys.stderr)
+        print("       [-t|--radix CHAR] [-w|--include-all-whitespace]", file=sys.stderr)
         print("       [--] [file ...]", file=sys.stderr)
         print(
-            "  ---------------------------  --------------------------------------------------",
+            "  ----------------------------  ----------------------------------------------",
             file=sys.stderr
         )
-        print("  -a|--all                     Scan the entire file for strings", file=sys.stderr)
-        print("  -e ENC|--encoding ENC        Select the character encoding to use", file=sys.stderr)
-        print("  -f|--print-file-name         Print the file name before each string", file=sys.stderr)
+        print("  -a|--all                      Scan the entire file for strings", file=sys.stderr)
         print(
-            "  -n N|--bytes N|-N|-m N       Print sequences with 'N' or more characters",
+            "  -D|--delimiters LIST          Use the ':' separated list of character values",
             file=sys.stderr
         )
-        print("  -o                           Print offsets in octal", file=sys.stderr)
+        print("                                as delimiters", file=sys.stderr)
+        print("  -e|--encoding CHAR            Select the character encoding to use", file=sys.stderr)
+        print("  -f|--print-file-name          Print the file name before each string", file=sys.stderr)
+        print("  -L|--length NUM               Read NUM bytes from offset", file=sys.stderr)
         print(
-            "  -s S|--output-separator S    Use 'S' as the output record separator",
+            "  -m|-n|--bytes NUM | -NUM      Print sequences with NUM or more characters",
+            file=sys.stderr
+        )
+        print("  -o                            Print offsets in octal", file=sys.stderr)
+        print("  -O|--offset NUM               Skip NUM bytes from beginning of file", file=sys.stderr)
+        print(
+            "  -s|--output-separator STRING  Use STRING as the output record separator",
             file=sys.stderr
         )
         print(
-            "  -t R|--radix R               Print offsets using the radix named by 'R'",
+            "  -S|--split-lines              Split long lines in chunks of 70 characters",
             file=sys.stderr
         )
         print(
-            "  -w|--include-all-whitespace  All whitespace characters are considered",
+            "  -t|--radix CHAR               Print offsets using the radix named by CHAR",
             file=sys.stderr
         )
-        print("                               to be part of a string", file=sys.stderr)
-        print("  --debug                      Enable debug mode", file=sys.stderr)
-        print("  -h|--help|-?                 Print a help message and exit", file=sys.stderr)
-        print("  -v|-V|--version              Print version and exit", file=sys.stderr)
-        print("  --                           Options processing terminator", file=sys.stderr)
+        print(
+            "  -w|--include-all-whitespace   All whitespace characters are considered",
+            file=sys.stderr
+        )
+        print("                                to be part of a string", file=sys.stderr)
+        print("  --debug                       Enable debug mode", file=sys.stderr)
+        print("  -h|--help|-?                  Print a help message and exit", file=sys.stderr)
+        print("  -v|-V|--version               Print version and exit", file=sys.stderr)
+        print("  --                            Options processing terminator", file=sys.stderr)
     print(file=sys.stderr)
 
 
@@ -283,10 +299,10 @@ def _process_environment_variables():
 
     # Command variants supported:
     if parameters["Command flavour"] == "posix":
-        parameters["String termination"] = "null or newline"
+        parameters["String termination"] = [0, ord('\n')]
     elif parameters["Command flavour"] in ("unix", "unix:v10"):
         parameters["Include backspaces"] = True
-        parameters["String termination"] = "null or newline"
+        parameters["String termination"] = [0, ord('\n')]
     elif parameters["Command flavour"] in ("plan9", "inferno"):
         parameters["Minimum length"] = 6
         parameters["Print offset"] = "decimal"
@@ -367,18 +383,22 @@ def _process_command_line():
             "help",
             "version",
         ]
-    else:
-        character_options = "1234567890ae:fhm:n:os:t:vVw?"
+    else: # PNU
+        character_options = "1234567890aD:e:fhL:m:n:oO:s:St:vVw?"
         string_options = [
             "all",
             "bytes=",
             "debug",
+            "delimiters=",
             "encoding=",
             "help",
             "include-all-whitespace",
+            "length=",
+            "offset=",
             "output-separator=",
             "print-file-name",
             "radix=",
+            "split-lines",
             "version",
         ]
 
@@ -411,6 +431,14 @@ def _process_command_line():
                 )
             sys.exit(1)
 
+        elif option in ("-D", "--delimiters"):
+            for delimiter in argument.split(":"):
+                try:
+                    parameters["String termination"].append(int(delimiter))
+                except ValueError:
+                    logging.critical("Invalid -D argument: list items must be integers")
+                    sys.exit(1)
+
         elif option in ("-e", "--encoding"):
             if argument in ("s", "S", "l", "b", "L", "B", "u"):
                 parameters["Encoding"] = argument
@@ -425,6 +453,18 @@ def _process_command_line():
             _display_help()
             sys.exit(0)
 
+        elif option in ("-L", "--length"):
+            parameters["Scan entire file"] = False
+            parameters["Target"] = "part"
+            try:
+                parameters["Length"] = int(argument)
+            except ValueError:
+                logging.critical("Invalid -L argument: must be an integer")
+                sys.exit(1)
+            if parameters["Minimum length"] < 1:
+                logging.critical("Invalid -L argument: must be a positive integer")
+                sys.exit(1)
+
         elif option in ("-m", "-n", "--bytes"):
             try:
                 parameters["Minimum length"] = int(argument)
@@ -438,6 +478,18 @@ def _process_command_line():
         elif option == "-o":
             parameters["Print offset"] = "octal"
 
+        elif option in ("-O", "--offset"):
+            parameters["Scan entire file"] = False
+            parameters["Target"] = "part"
+            try:
+                parameters["Offset"] = int(argument)
+            except ValueError:
+                logging.critical("Invalid -O argument: must be an integer")
+                sys.exit(1)
+            if parameters["Minimum length"] < 1:
+                logging.critical("Invalid -O argument: must be a positive integer")
+                sys.exit(1)
+
         elif option in ("-s", "--output-separator"):
             if parameters["Command flavour"] in ("unix", "unix:v10"):
                 logging.critical(
@@ -446,6 +498,9 @@ def _process_command_line():
                 sys.exit(1)
             else:
                 parameters["Output separator"] = argument
+
+        elif option in ("-S", "--split-lines"):
+            parameters["Split long lines"] = 70
 
         elif option in ("-t", "--radix"):
             if parameters["Command flavour"] in ("unix", "unix:v10"):
@@ -511,26 +566,17 @@ def _is_character_printable(value, encoding, include_backspaces, include_whitesp
 
 
 ################################################################################
-def strings(
-    filename="",
-    encoding=None,
-    minimum_length=None,
-    include_backspaces=None,
-    include_whitespaces=None,
-    string_termination=None
+def _strings(
+    filename,
+    encoding,
+    minimum_length,
+    include_backspaces,
+    include_whitespaces,
+    string_termination,
+    file_offset,
+    file_length
 ):
-    """Return a list of strings of printable characters in a file or input stream"""
-    if encoding == None:
-        encoding = parameters["Encoding"]
-    if minimum_length == None:
-        minimum_length = parameters["Minimum length"]
-    if include_backspaces == None:
-        include_backspaces = parameters["Include backspaces"]
-    if include_whitespaces == None:
-        include_whitespaces = parameters["Include whitespaces"]
-    if string_termination == None:
-        string_termination = parameters["String termination"]
-
+    """Return a list of strings of printable characters in a file, file segment or input stream"""
     bytes_to_read = 1
     unpack_string = "B"
     if encoding == "l":
@@ -557,7 +603,9 @@ def strings(
     else:
         file = sys.stdin.buffer
 
-    offset = 0
+    offset = file_offset
+    if file_offset != 0:
+        file.seek(offset, 1)
     total_extra_bytes = 0
     bytes_buffer = b""
     bytes_read = file.read(bytes_to_read)
@@ -599,11 +647,8 @@ def strings(
         else:
             length = len(printable_string)
             if length >= minimum_length:
-                if string_termination == "unprintable" \
-                or (
-                    string_termination == "null or newline" \
-                    and value in (0, ord("\n"))
-                ):
+                if len(string_termination) == 0 \
+                or value in string_termination:
                     logging.debug(
                         "Offset=%d  String=%s  Delimiter=%d",
                         offset - length - total_extra_bytes,
@@ -615,7 +660,9 @@ def strings(
             total_extra_bytes = 0
 
         offset += bytes_to_read + extra_bytes
-        if bytes_buffer:
+        if offset >= file_offset + file_length:
+            bytes_read = b""
+        elif bytes_buffer:
             bytes_read = bytes_buffer[:1]
             bytes_buffer = bytes_buffer[1:]
         else:
@@ -624,6 +671,73 @@ def strings(
     file.close()
 
     return results
+
+
+################################################################################
+def strings(
+    filename="",
+    encoding=None,
+    minimum_length=None,
+    include_backspaces=None,
+    include_whitespaces=None,
+    string_termination=None,
+    scan_entire_file=None,
+    target=None,
+    file_offset=None,
+    file_length=None
+):
+    """Return a list of strings of printable characters in a file, file segment or input stream"""
+    if encoding == None:
+        encoding = parameters["Encoding"]
+    if minimum_length == None:
+        minimum_length = parameters["Minimum length"]
+    if include_backspaces == None:
+        include_backspaces = parameters["Include backspaces"]
+    if include_whitespaces == None:
+        include_whitespaces = parameters["Include whitespaces"]
+    if string_termination == None:
+        string_termination = parameters["String termination"]
+    if scan_entire_file == None:
+        scan_entire_file = parameters["Scan entire file"]
+    if target == None:
+        target = parameters["Target"]
+    if file_offset == None:
+        file_offset = parameters["Offset"]
+    if file_length == None:
+        file_length = parameters["Length"]
+
+    segments = []
+    if not filename or scan_entire_file:
+        segments.append([0, sys.maxsize])
+    else:
+        if not target:
+            # TODO Identify file type and set target
+            pass
+
+        if target == "part":
+            segments.append([file_offset, file_length])
+        elif target == "ELF":
+            # TODO Process relevant segments of executable
+            pass
+        elif target == "a.out":
+            # TODO Process relevant segments of executable
+            pass
+        else: # unidentified: scan entire file
+            segments.append([0, sys.maxsize])
+
+    all_results = []
+    for offset, length in segments:
+        all_results += _strings(
+            filename,
+            encoding,
+            minimum_length,
+            include_backspaces,
+            include_whitespaces,
+            string_termination,
+            offset,
+            length
+        )
+    return all_results
 
 
 ################################################################################
@@ -642,7 +756,10 @@ def _print_string(filename, offset, printable_string):
         print(printable_string[:maximum_length], end="")
         if len(printable_string) > maximum_length:
             print("...", end="")
-        print(parameters["Output separator"])
+        if parameters["Output separator"]:
+            print("\n" + parameters["Output separator"])
+        else:
+            print()
 
         printable_string = printable_string[maximum_length:]
         offset += maximum_length
@@ -671,7 +788,6 @@ def main():
                 logging.error('"%s" is not a file name', filename)
                 exit_status = 1
     else:
-        parameters["Scan entire file"] = True
         for offset, printable_string in strings():
             _print_string("{standard input}", offset, printable_string)
 

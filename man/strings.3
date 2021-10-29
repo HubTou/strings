@@ -1,0 +1,112 @@
+.Dd October 29, 2021
+.Dt STRINGS 3
+.Os
+.Sh NAME
+.Nm strings
+.Nd return the strings of printable characters in files Python library
+.Sh SYNOPSIS
+.Em import strings
+.Pp
+.Ft List
+.Fn strings.strings "String filename, char encoding, Int minimum_length, Boolean include_backspaces, Boolean include_whitespaces, String string_termination, Boolean scan_entire_file, String target, Integer file_offset, Integer file_length"
+.Sh DESCRIPTION
+The
+.Fn strings
+function returns a list of (offset, printable strings) tuples contained in the
+.Op filename
+file or the standard input stream if empty.
+.Pp
+All the other parameters also have default values and thus are optional.
+.Pp
+The
+.Op encoding
+parameter sets the character encoding to be used while searching for strings.
+Valid values are:
+.Bl -tag -width indent -compact
+.It Ar s
+for single 7-bit-byte characters (ASCII, ISO 8859). The default value.
+.It Ar S
+for single 8-bit-byte characters.
+.It Ar l
+for 16-bit little-endian.
+.It Ar b
+for 16-bit big-endian.
+.It Ar L
+for 32-bit little-endian.
+.It Ar B
+for 32-bit big-endian.
+.It Ar u
+for 1 to 4 bytes UTF-8 characters.
+.El
+.Pp
+The
+.Op minimum_length
+parameter defines the minimum number of contiguous characters in strings.
+The default value is 4.
+.Pp
+If True, the
+.Op include_backspaces
+parameter allows backspace characters in strings.
+The default value is False.
+.Pp
+If True, the
+.Op include_whitespaces
+parameter allows backspace, new line, vertical tab, form feed and carriage return characters in strings.
+The default value is False.
+.Pp
+The
+.Op string_termination
+parameter expects a comma separated string of the integer values of allowed string ending characters.
+The default value is a blank string, which means any unprintable character.
+It is common to use "0:10" to allow only null or new line characters, which is often relevant for binary and text files respectively.
+.Pp
+If True, the
+.Op scan_entire_file
+parameter sets a full file scan.
+The default value is False, though without any executable file formats supported (yet) it also falls back to a full scan.
+.Pp
+The
+.Op target
+parameter allows the selection of a specific executable file format (potentially different from the system's default), though none are currently supported.
+It must be set to "part" if you want to use the
+.Op file_offset
+or
+.Op file_length
+parameters.
+The default value is a blank string.
+.Pp
+The
+.Op file_offset
+parameter defines the number of bytes to skip from the beginning of the file to scan.
+The default value is 0.
+.Pp
+The
+.Op file_length
+parameter defines the number of bytes to read from the
+.Op file_offset
+of the file to scan.
+The default value is all.
+.Sh ENVIRONMENT
+The
+.Ev STRINGS_DEBUG
+environment variable can be set to any value to enable debug mode.
+.Sh SEE ALSO
+.Xr strings 1 ,
+.Xr what 1 ,
+.Xr ident 1
+.Sh STANDARDS
+The
+.Nm
+library tries to follow the PEP 8 style guide for Python code.
+.Sh HISTORY
+This library was made for the
+.Lk https://github.com/HubTou/PNU [PNU project]
+.Sh LICENSE
+It is available under the 3-clause BSD license.
+.Sh AUTHORS
+.An Hubert Tournier
+.Sh CAVEATS
+This library does not (yet) support any executable format (ELF, a.out, COFF, etc.).
+All executable files are entirely scanned regardless of the
+.Op target
+parameter, with the exception of the "part" value.

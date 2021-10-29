@@ -22,7 +22,7 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.Dd October 26, 2021
+.Dd October 29, 2021
 .Dt STRINGS 1
 .Os
 .Sh NAME
@@ -31,13 +31,17 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl a | Fl -all
-.Op Fl e Ar encoding | Fl -encoding= Ns Ar encoding
+.Op Fl D Ar STRING | Fl -delimiters Ar STRING
+.Op Fl e Ar CHAR | Fl -encoding Ar CHAR
 .Op Fl f | Fl -print-file-name
 .Op Fl ? | Fl h | Fl -help
-.Op Fl m Ar number | Fl n Ar number | Fl -bytes= Ns Ar number | Fl Ar number
+.Op Fl L Ar NUM | Fl -length Ar NUM
+.Op Fl m Ar NUM | Fl n Ar NUM | Fl -bytes Ar NUM | Fl Ar NUM
 .Op Fl o
-.Op Fl s Ar separator | Fl -output-separator= Ns Ar separator
-.Op Fl t Ar radix | Fl -radix= Ns Ar radix
+.Op Fl O Ar NUM | Fl -offset Ar NUM
+.Op Fl s Ar STRING | Fl -output-separator Ar STRING
+.Op Fl S | Fl -split-lines
+.Op Fl t Ar CHAR | Fl -radix Ar CHAR
 .Op Fl v | Fl V | Fl -version
 .Op Fl w | Fl -include-all-whitespace
 .Op Fl -debug
@@ -55,7 +59,6 @@ characters long and are followed by an unprintable character.
 The default value of
 .Va n
 is 4.
-By default, the entire file is scanned.
 The
 .Nm
 utility is mainly used for determining the contents of non-text files.
@@ -67,11 +70,11 @@ The following options are available:
 .It Fl a | Fl -all
 Scan the entire file for printable strings
 (which is the default anyway)
-.It Fl e Ar encoding | Fl -encoding= Ns Ar encoding
+.It Fl D Ar LIST | Fl -delimiters Ar LIST
+Use the ':' separated list of character values as delimiters
+.It Fl e Ar CHAR | Fl -encoding Ar CHAR
 Select the character encoding to be used while searching for strings.
-Valid values for argument
-.Ar encoding
-are:
+Valid values are:
 .Bl -tag -width indent -compact
 .It Ar s
 for single 7-bit-byte characters (ASCII, ISO 8859).
@@ -94,35 +97,39 @@ The default is to assume that characters are encoded using a single
 Print the name of the file before each string
 .It Fl ? | Fl h | Fl -help
 Print a usage summary and exit
+.It Fl L Ar NUM | Fl -length Ar NUM
+Read NUM bytes from offset
 .It Xo
-.Fl m Ar number |
-.Fl n Ar number |
-.Fl -bytes= Ns Ar number |
-.Fl Ar number
+.Fl m Ar NUM |
+.Fl n Ar NUM |
+.Fl -bytes Ar NUM |
+.Fl Ar NUM
 .Xc
 Print the contiguous character sequence of at least
-.Ar number
+.Ar NUM
 characters long, instead of the default of 4 characters.
 Argument
-.Ar number
+.Ar NUM
 should specify a positive decimal integer
 .It Fl o
 Equivalent to specifying
 .Fl t Ar o
-.It Fl s Ar separator | Fl -output-separator= Ns Ar separator
+.It Fl O Ar NUM | Fl -offset Ar NUM
+Skip NUM bytes from beginning of file
+.It Fl s Ar STRING | Fl -output-separator Ar STRING
 By default, output strings are delimited by a new-line.
-This option allows you to supply any string
-.Ar separator
+This option allows you to supply any
+.Ar STRING
 to be used as the output record separator.
 Useful with
 .Fl -include-all-whitespace
 where strings may contain new-lines internally.
-.It Fl t Ar radix | Fl -radix= Ns Ar radix
+.It Fl S | Fl -split-lines
+Split long lines in chunks of 70 characters
+.It Fl t Ar CHAR | Fl -radix Ar CHAR
 Print the offset from the start of the file before each string
 using the specified radix.
-Valid values for argument
-.Ar radix
-are:
+Valid values are:
 .Bl -tag -width indent -compact
 .It Ar d
 for decimal
@@ -191,7 +198,8 @@ prefixed with the filename and the offset within the file use:
 .Xr objdump 1 ,
 .Xr ranlib 1 ,
 .Xr readelf 1 ,
-.Xr size 1
+.Xr size 1 ,
+.Xr strings 3
 .Sh STANDARDS
 The
 .Nm
@@ -201,8 +209,27 @@ This re-implementation tries to follow the PEP 8 style guide for Python code.
 .Pp
 Beyond Plan 9 and Inferno, UTF-encoded characters are supported in all
 (but POSIX and Unix v10) flavours with the
-.Fl e Ar u | Fl -encoding= Ns Ar u
+.Fl e Ar u | Fl -encoding Ar u
 options.
+.Pp
+It also adds some non standard options:
+.Bl -bullet
+.It
+.Fl D | Fl -delimiters
+which can be used to mimic Posix / Unix v10 behaviour with a "0:10" parameter, and help reduce the garbage
+.It
+.Fl S | Fl -split-lines
+to mimic Plan 9 / Inferno behaviour
+.It
+.Fl O | Fl -offset
+and
+.Fl L | Fl -length
+to mimic Mark Russinovich's Windows implementation
+.Fl o
+/ 
+.Fl b
+options.
+.El
 .Sh PORTABILITY
 Tested OK under Windows.
 .Sh HISTORY
