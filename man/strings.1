@@ -22,7 +22,7 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.Dd October 29, 2021
+.Dd October 31, 2021
 .Dt STRINGS 1
 .Os
 .Sh NAME
@@ -44,6 +44,7 @@
 .Op Fl t Ar CHAR | Fl -radix Ar CHAR
 .Op Fl v | Fl V | Fl -version
 .Op Fl w | Fl -include-all-whitespace
+.Op @file
 .Op Fl -debug
 .Op Fl -
 .Op Ar
@@ -123,7 +124,7 @@ This option allows you to supply any
 to be used as the output record separator.
 Useful with
 .Fl -include-all-whitespace
-where strings may contain new-lines internally.
+where strings may contain new-lines internally
 .It Fl S | Fl -split-lines
 Split long lines in chunks of 70 characters
 .It Fl t Ar CHAR | Fl -radix Ar CHAR
@@ -142,10 +143,29 @@ for hexadecimal
 Display a version identifier and exit
 .It Fl w | Fl -include-all-whitespace
 By default tab and space characters are included in the strings that are displayed,
-but other whitespace characters, such a newlines and carriage returns, are not.
+but other whitespace characters, such a newlines and carriage returns, are not
 The
 .Fl w
-option changes this so that all whitespace characters are considered to be part of a string.
+option changes this so that all whitespace characters are considered to be part of a string
+.It @file
+Read command-line options from
+.Ar file .
+The options read are inserted in place of the original
+.Op @file
+option. If 
+.Ar file
+does not exist, or cannot be read, then the option will be treated literally, and not removed.
+.Pp
+Options in 
+.Ar file
+are separated by whitespace.
+A whitespace character may be included in an option by surrounding the entire option in either single or double quotes.
+Any character (including a backslash) may be included by prefixing the character to be included with a backslash.
+The
+.Ar file
+may itself contain additional
+.Op @file
+options; any such options will be processed recursively
 .It Fl -debug
 Enable debug mode
 .It Fl -
@@ -254,7 +274,3 @@ This re-implementation does not support any executable format (ELF, a.out, COFF,
 All executable files are entirely scanned, regardless of
 .Fl a | Fl -all | Fl | Fl -data | Fl d | Fl t | Fl s | Fl T | Fl -target
 options.
-.Pp
-GNU strings
-.Ar @file
-option is also unsupported.

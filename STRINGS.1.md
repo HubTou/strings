@@ -19,6 +19,7 @@ strings - print the strings of printable characters in files
 \[-t|--radix CHAR\]
 \[-v|-V|--version\]
 \[-w|--include-all-whitespace\]
+\[@file\]
 \[--debug\]
 \[--\]
 \[file ...\]
@@ -44,11 +45,12 @@ Options | Use
 -m\|-n\|--bytes NUM \| -NUM|Print the contiguous character sequence of at least NUM characters long, instead of the default of 4 characters. Argument NUM should specify a positive decimal integer
 -o|Equivalent to specifying *-t o*
 -O\|--offset NUM|Skip NUM bytes from beginning of file
--s\|--output-separator STRING|By default, output strings are delimited by a new-line. This option allows you to supply any string separator to be used as the output record separator. Useful with *--include-all-whitespace* where strings may contain new-lines internally.
+-s\|--output-separator STRING|By default, output strings are delimited by a new-line. This option allows you to supply any string separator to be used as the output record separator. Useful with *--include-all-whitespace* where strings may contain new-lines internally
 -S\|--split-lines|Split long lines in chunks of 70 characters
 -t\|--radix CHAR|Print the offset from the start of the file before each string using the specified radix. Valid values are:<br><ul><li>d for decimal<li>o for octal<li>x for hexadecimal</ul>
 -v\|-V\|--version|Display a version identifier and exit
--w\|-include-all-whitespace|By default tab and space characters are included in the strings that are displayed, but other whitespace characters, such a new-lines and carriage returns, are not. The *-w* option changes this so that all whitespace characters are considered to be part of a string.
+-w\|-include-all-whitespace|By default tab and space characters are included in the strings that are displayed, but other whitespace characters, such a new-lines and carriage returns, are not. The *-w* option changes this so that all whitespace characters are considered to be part of a string
+@file|Read command-line options from *file*. The options read are inserted in place of the original *@file* option. If *file* does not exist, or cannot be read, then the option will be treated literally, and not removed.<br>Options in *file* are separated by whitespace. A whitespace character may be included in an option by surrounding the entire option in either single or double quotes. Any character (including a backslash) may be included by prefixing the character to be included with a backslash. The file may itself contain additional *@file* options; any such options will be processed recursively
 --debug|Enable debug mode
 --|Options processing terminator
 
@@ -115,6 +117,4 @@ This manual page is based on the one written for [FreeBSD](https://www.freebsd.o
 ## CAVEATS
 This re-implementation does not support any executable format ([ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format), [a.out](https://en.wikipedia.org/wiki/A.out), [COFF](https://en.wikipedia.org/wiki/COFF), etc.).
 All executable files are entirely scanned, regardless of *-a* | *--all* | *-* | *--data* | *-d* | *-t* | *-s* | *-T* | *--target* options.
-
-[GNU strings](https://www.gnu.org/software/binutils/) *@file* option is also unsupported.
 

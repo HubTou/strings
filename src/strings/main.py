@@ -7,12 +7,13 @@ Author: Hubert Tournier
 import getopt
 import logging
 import os
+import shlex
 import struct
 import signal
 import sys
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: strings - print the strings of printable characters in files v1.1.0 (October 29, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: strings - print the strings of printable characters in files v1.1.1 (October 31, 2021) by Hubert Tournier $"
 
 # Default parameters. Can be overcome by environment variables, then command line options
 parameters = {
@@ -137,7 +138,7 @@ def _display_help():
         print("       [-f|--print-file-name] [-n|--bytes NUM | -NUM] [-o]", file=sys.stderr)
         print("       [-s|--output-separator STRING] [-t|--radix CHAR]", file=sys.stderr)
         print("       [-T|--target STRING] [-w|--include-all-whitespace]", file=sys.stderr)
-        print("       [--] [file ...]", file=sys.stderr)
+        print("       [@file] [--] [file ...]", file=sys.stderr)
         print(
             "  ----------------------------  ---------------------------------------------------------",
             file=sys.stderr
@@ -178,6 +179,7 @@ def _display_help():
             file=sys.stderr
         )
         print("                                to be part of a string", file=sys.stderr)
+        print("  @file                         Insert command-line options from file", file=sys.stderr)
         print("  --debug                       Enable debug mode", file=sys.stderr)
         print("  -h|--help|-?                  Print a help message and exit", file=sys.stderr)
         print("  -v|-V|--version               Print version and exit", file=sys.stderr)
@@ -215,7 +217,7 @@ def _display_help():
         print("       [-f|--print-file-name] [-L|--length NUM]", file=sys.stderr)
         print("       [-m NUM|-n NUM|--bytes NUM|-NUM] [-o] [-O|--offset NUM]", file=sys.stderr)
         print("       [-s|--output-separator STRING] [-S|--split-lines]", file=sys.stderr)
-        print("       [-t|--radix CHAR] [-w|--include-all-whitespace]", file=sys.stderr)
+        print("       [-t|--radix CHAR] [-w|--include-all-whitespace] [@file]", file=sys.stderr)
         print("       [--] [file ...]", file=sys.stderr)
         print(
             "  ----------------------------  ----------------------------------------------",
@@ -253,6 +255,7 @@ def _display_help():
             file=sys.stderr
         )
         print("                                to be part of a string", file=sys.stderr)
+        print("  @file                         Insert command-line options from file", file=sys.stderr)
         print("  --debug                       Enable debug mode", file=sys.stderr)
         print("  -h|--help|-?                  Print a help message and exit", file=sys.stderr)
         print("  -v|-V|--version               Print version and exit", file=sys.stderr)
@@ -319,13 +322,48 @@ def _process_environment_variables():
 
 
 ################################################################################
+def insert_file(part):
+    """Return a command line argument with recursively expanded @file options"""
+    new_parts = []
+    filename = part[1:]
+    if os.path.isfile(filename):
+        with open(filename, "r") as file:
+            for new_part in shlex.split(file.readline()):
+                if new_part.startswith('@'):
+                    new_parts += insert_file(new_part)
+                else:
+                    new_parts.append(new_part)
+    else:
+        new_parts.append(part)
+
+    return new_parts
+
+
+################################################################################
+def _read_option_files(command_line):
+    """Return a command line with expanded @file options"""
+    new_argv = []
+    for part in command_line:
+        if part.startswith('@'):
+            new_argv += insert_file(part)
+        else:
+            new_argv.append(part)
+
+    return new_argv
+
+
+################################################################################
 def _process_command_line():
     """Process command line options"""
     # pylint: disable=C0103
     global parameters
     # pylint: enable=C0103
 
-    # option letters followed by : expect an argument
+    # @file option handling:
+    if parameters["Command flavour"] in ("PNU", "gnu", "gnu:linux", "linux"):
+        sys.argv = _read_option_files(sys.argv)
+
+    # Option letters followed by : expect an argument
     # same for option strings followed by =
     if parameters["Command flavour"] == "posix":
         character_options = "an:t:?"
