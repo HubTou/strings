@@ -36,7 +36,7 @@ The following options are available:
 
 Options | Use
 ------- | ---
--a\|--all|Scan the entire file for printable strings (which is the default anyway)
+-a\|--all|Scan the entire file for printable strings
 -D\|--delimiters LIST|Use the ':' separated list of character values as delimiters
 -e\|--encoding CHAR|Select the character encoding to be used while searching for strings. Valid values for are:<br><ul><li>s for single 7-bit-byte characters (ASCII, ISO 8859).<li>S for single 8-bit-byte characters.<li>l for 16-bit little-endian.<li>b for 16-bit big-endian.<li>L for 32-bit little-endian.<li>B for 32-bit big-endian.<li>u for 1 to 4 bytes UTF-8 characters.</ul><br>The default is to assume that characters are encoded using a single 7-bit byte
 -f\|--print-file-name|Print the name of the file before each string

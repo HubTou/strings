@@ -13,7 +13,7 @@ import signal
 import sys
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: strings - print the strings of printable characters in files v1.1.1 (October 31, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: strings - print the strings of printable characters in files v1.1.2 (November 1, 2021) by Hubert Tournier $"
 
 # Default parameters. Can be overcome by environment variables, then command line options
 parameters = {
@@ -284,12 +284,12 @@ def _process_environment_variables():
     global parameters
     # pylint: enable=C0103
 
-    if "STRINGS_DEBUG" in os.environ.keys():
+    if "STRINGS_DEBUG" in os.environ:
         logging.disable(logging.NOTSET)
 
-    if "FLAVOUR" in os.environ.keys():
+    if "FLAVOUR" in os.environ:
         parameters["Command flavour"] = os.environ["FLAVOUR"].lower()
-    if "STRINGS_FLAVOUR" in os.environ.keys():
+    if "STRINGS_FLAVOUR" in os.environ:
         parameters["Command flavour"] = os.environ["STRINGS_FLAVOUR"].lower()
 
     # From "man environ":
@@ -297,7 +297,7 @@ def _process_environment_variables():
     # When set to any value, this environment variable
     # modifies the behaviour of certain commands to (mostly)
     # execute in a strictly POSIX-compliant manner.
-    if "POSIXLY_CORRECT" in os.environ.keys():
+    if "POSIXLY_CORRECT" in os.environ:
         parameters["Command flavour"] = "posix"
 
     # Command variants supported:

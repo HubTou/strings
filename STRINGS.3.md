@@ -1,7 +1,7 @@
 # STRINGS(3)
 
 ## NAME
-strings - return the strings of printable characters in files Python library
+strings - return the strings of printable characters in files
 
 ## SYNOPSIS
 **import strings**
