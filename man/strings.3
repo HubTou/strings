@@ -1,4 +1,4 @@
-.Dd October 29, 2021
+.Dd November 6, 2021
 .Dt STRINGS 3
 .Os
 .Sh NAME
@@ -8,18 +8,29 @@
 .Em import strings
 .Pp
 .Ft List
-.Fn strings.strings "String filename, char encoding, Int minimum_length, Boolean include_backspaces, Boolean include_whitespaces, String string_termination, Boolean scan_entire_file, String target, Integer file_offset, Integer file_length"
+.Fo strings.strings
+.Fa "String filename"
+.Fa "Character encoding"
+.Fa "Integer minimum_length"
+.Fa "Boolean include_backspaces"
+.Fa "Boolean include_whitespaces"
+.Fa "String string_termination"
+.Fa "Boolean scan_entire_file"
+.Fa "String target"
+.Fa "Integer file_offset"
+.Fa "Integer file_length"
+.Fc
 .Sh DESCRIPTION
 The
 .Fn strings
 function returns a list of (offset, printable strings) tuples contained in the
-.Op filename
+.Fa filename
 file or the standard input stream if empty.
 .Pp
 All the other parameters also have default values and thus are optional.
 .Pp
 The
-.Op encoding
+.Fa encoding
 parameter sets the character encoding to be used while searching for strings.
 Valid values are:
 .Bl -tag -width indent -compact
@@ -40,50 +51,50 @@ for 1 to 4 bytes UTF-8 characters.
 .El
 .Pp
 The
-.Op minimum_length
+.Fa minimum_length
 parameter defines the minimum number of contiguous characters in strings.
 The default value is 4.
 .Pp
 If True, the
-.Op include_backspaces
+.Fa include_backspaces
 parameter allows backspace characters in strings.
 The default value is False.
 .Pp
 If True, the
-.Op include_whitespaces
+.Fa include_whitespaces
 parameter allows backspace, new line, vertical tab, form feed and carriage return characters in strings.
 The default value is False.
 .Pp
 The
-.Op string_termination
+.Fa string_termination
 parameter expects a comma separated string of the integer values of allowed string ending characters.
 The default value is a blank string, which means any unprintable character.
 It is common to use "0:10" to allow only null or new line characters, which is often relevant for binary and text files respectively.
 .Pp
 If True, the
-.Op scan_entire_file
+.Fa scan_entire_file
 parameter sets a full file scan.
 The default value is False, though without any executable file formats supported (yet) it also falls back to a full scan.
 .Pp
 The
-.Op target
+.Fa target
 parameter allows the selection of a specific executable file format (potentially different from the system's default), though none are currently supported.
 It must be set to "part" if you want to use the
-.Op file_offset
+.Fa file_offset
 or
-.Op file_length
+.Fa file_length
 parameters.
 The default value is a blank string.
 .Pp
 The
-.Op file_offset
+.Fa file_offset
 parameter defines the number of bytes to skip from the beginning of the file to scan.
 The default value is 0.
 .Pp
 The
-.Op file_length
+.Fa file_length
 parameter defines the number of bytes to read from the
-.Op file_offset
+.Fa file_offset
 of the file to scan.
 The default value is all.
 .Sh ENVIRONMENT
@@ -96,8 +107,8 @@ environment variable can be set to any value to enable debug mode.
 .Xr ident 1
 .Sh STANDARDS
 The
-.Nm
-library tries to follow the PEP 8 style guide for Python code.
+.Lb strings
+tries to follow the PEP 8 style guide for Python code.
 .Sh HISTORY
 This library was made for the
 .Lk https://github.com/HubTou/PNU [PNU project]
@@ -108,5 +119,5 @@ It is available under the 3-clause BSD license.
 .Sh CAVEATS
 This library does not (yet) support any executable format (ELF, a.out, COFF, etc.).
 All executable files are entirely scanned regardless of the
-.Op target
+.Fa target
 parameter, with the exception of the "part" value.

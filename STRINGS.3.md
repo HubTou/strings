@@ -7,7 +7,7 @@ strings - return the strings of printable characters in files
 **import strings**
 
 *List*
-strings.**strings**(String *filename*, char *encoding*, Int *minimum_length*, Boolean *include_backspaces*, Boolean *include_whitespaces*, String *string_termination*, Boolean *scan_entire_file*, String *target*, Integer *file_offset*, Integer *file_length*)
+strings.**strings**(String *filename*, Character *encoding*, Integer *minimum_length*, Boolean *include_backspaces*, Boolean *include_whitespaces*, String *string_termination*, Boolean *scan_entire_file*, String *target*, Integer *file_offset*, Integer *file_length*)
 
 ## DESCRIPTION
 The **strings** function returns a list of (offset, printable strings) tuples contained in the *filename* file or the standard input stream if empty.

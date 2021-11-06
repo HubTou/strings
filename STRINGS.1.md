@@ -77,6 +77,9 @@ To display strings in all sections of /bin/ln use:<br>
 To display strings in all sections of /bin/cat prefixed with the filename and the offset within the file use:<br>
 ```$ strings -a -f -t x /bin/cat```
 
+To analyze a Windows malware, looking for embedded VB or JScripts (with CR+LF delimited Unicode strings) use:<br>
+```$ strings -D 13 -e u /quarantine/malware.exe```
+
 ## SEE ALSO
 [ar(1)](https://www.freebsd.org/cgi/man.cgi?query=ar),
 [nm(1)](https://www.freebsd.org/cgi/man.cgi?query=nm),

@@ -13,7 +13,7 @@ import signal
 import sys
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: strings - print the strings of printable characters in files v1.1.2 (November 1, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: strings - print the strings of printable characters in files v1.1.3 (November 6, 2021) by Hubert Tournier $"
 
 # Default parameters. Can be overcome by environment variables, then command line options
 parameters = {

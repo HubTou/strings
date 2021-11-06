@@ -22,7 +22,7 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.Dd October 31, 2021
+.Dd November 6, 2021
 .Dt STRINGS 1
 .Os
 .Sh NAME
@@ -211,6 +211,9 @@ To display strings in all sections of
 .Pa /bin/cat
 prefixed with the filename and the offset within the file use:
 .Dl "$ strings -a -f -t x /bin/cat"
+.Pp
+To analyze a Windows malware, looking for embedded VB or JScripts (with CR+LF delimited Unicode strings) use:
+.Dl "$ strings -D 13 -e u /quarantine/malware.exe"
 .Sh SEE ALSO
 .Xr ar 1 ,
 .Xr nm 1 ,
